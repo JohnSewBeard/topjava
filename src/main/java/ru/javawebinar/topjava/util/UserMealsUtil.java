@@ -5,7 +5,6 @@ import ru.javawebinar.topjava.model.UserMealWithExceed;
 
 import java.time.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -21,24 +20,23 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExceed>  getFilteredWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        Map<LocalDate, Integer> caloriesForEachDay = mealList.stream()
-                        .collect(Collectors.toMap(
-                                m -> m.getDateTime().toLocalDate(),
-                                UserMeal::getCalories,
-                                (c1, c2) -> c1 + c2));
 
-        return mealList.stream()
-                .filter(userMeal ->  TimeUtil.isBetween(userMeal.getDateTime().toLocalTime(), startTime, endTime))
-                .map(userMeal -> newUserMealWithExceed(userMeal, caloriesForEachDay, caloriesPerDay))
-                .collect(Collectors.toList());
-    }
+        Map<LocalDate, Integer> caloriesForEachDay = new HashMap<>();
+        for (UserMeal meal : mealList) {
+            LocalDate date = meal.getDateTime().toLocalDate();
+            caloriesForEachDay.put(date, caloriesForEachDay.getOrDefault(date, 0) + meal.getCalories());
+        }
 
-    private static UserMealWithExceed newUserMealWithExceed(UserMeal userMeal, Map<LocalDate, Integer> caloriesForEachDay, int caloriesPerDay) {
-        LocalDate date = userMeal.getDateTime().toLocalDate();
-        return new UserMealWithExceed(
-                userMeal.getDateTime(),
-                userMeal.getDescription(),
-                userMeal.getCalories(),
-                caloriesForEachDay.get(date) > caloriesPerDay);
+        List<UserMealWithExceed> result = new ArrayList<>();
+        for (UserMeal userMeal : mealList) {
+            LocalDateTime date = userMeal.getDateTime();
+            if (TimeUtil.isBetween(date.toLocalTime(), startTime, endTime)) {
+                boolean exceed = caloriesForEachDay.get(date.toLocalDate()) > caloriesPerDay;
+                result.add(new UserMealWithExceed(date, userMeal.getDescription(),
+                userMeal.getCalories(), exceed));
+            }
+        }
+
+        return result;
     }
 }
