@@ -34,6 +34,28 @@ public class MemoryMealDAO implements MealDAO{
     }
 
     @Override
+    public void add(Meal meal) {
+        int id = countId.incrementAndGet();
+        meal.setId(id);
+        db.put(id, meal);
+    }
+
+    @Override
+    public void update(Meal meal) {
+        db.replace(meal.getId(), meal);
+    }
+
+    @Override
+    public Meal get(int id) {
+        return db.get(id);
+    }
+
+    @Override
+    public void delete(int id) {
+        db.remove(id);
+    }
+
+    @Override
     public List<Meal> getList() {
         return new ArrayList<>(db.values());
     }
