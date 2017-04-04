@@ -1,15 +1,12 @@
 package ru.javawebinar.topjava.model;
 
+import com.google.common.base.MoreObjects;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-/**
- * GKislin
- * 11.01.2015.
- */
-public class Meal {
-    private Integer id;
+public class Meal extends BaseEntity {
 
     private final LocalDateTime dateTime;
 
@@ -26,14 +23,6 @@ public class Meal {
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public LocalDateTime getDateTime() {
@@ -56,17 +45,13 @@ public class Meal {
         return dateTime.toLocalTime();
     }
 
-    public boolean isNew() {
-        return id == null;
-    }
-
     @Override
     public String toString() {
-        return "Meal{" +
-                "id=" + id +
-                ", dateTime=" + dateTime +
-                ", description='" + description + '\'' +
-                ", calories=" + calories +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("dateTime", dateTime)
+                .add("description", description)
+                .add("calories", calories)
+                .toString();
     }
 }
