@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
@@ -9,8 +10,11 @@ import ru.javawebinar.topjava.service.MealService;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -48,7 +52,23 @@ public class MealRestController {
     }
 
     public void list(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("meals", service.getAll(id()));
+        String startDate = request.getParameter("fromDate");
+        String endDate = request.getParameter("toDate");
+        String startTime = request.getParameter("fromTime");
+        String endTime = request.getParameter("toTime");
+
+        LocalDate fromDate = StringUtils.isEmpty(startDate) ? LocalDate.MIN : LocalDate.parse(startDate);
+        LocalDate toDate = StringUtils.isEmpty(endDate) ? LocalDate.MAX : LocalDate.parse(endDate);
+        LocalTime fromTime = StringUtils.isEmpty(startTime) ? LocalTime.MIN : LocalTime.parse(startTime);
+        LocalTime toTime = StringUtils.isEmpty(endTime) ? LocalTime.MAX: LocalTime.parse(endTime);
+
+        HttpSession session = request.getSession();
+        session.setAttribute("fromDate", StringUtils.isEmpty(startDate) ? null: fromDate);
+        session.setAttribute("toDate", StringUtils.isEmpty(endDate) ? null : toDate);
+        session.setAttribute("fromTime", StringUtils.isEmpty(startTime) ? null : fromTime);
+        session.setAttribute("toTime", StringUtils.isEmpty(endTime) ? null : toTime);
+
+        request.setAttribute("meals", service.getAll(id(), fromDate, toDate, fromTime, toTime));
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
 
