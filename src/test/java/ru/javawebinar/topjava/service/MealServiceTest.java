@@ -1,7 +1,16 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,6 +24,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -26,10 +36,49 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+    private static final Logger LOG = getLogger(MealServiceTest.class);
 
     static {
         SLF4JBridgeHandler.install();
     }
+
+    private long startTime;
+    private static StringBuilder sb;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @ClassRule
+    public static final ExternalResource er = new ExternalResource() {
+        @Override
+        protected void before() throws Throwable {
+            sb = new StringBuilder()
+                    .append("\n= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =\n")
+                    .append("Description for all methods time complexity:\n\n");
+        }
+
+        @Override
+        protected void after() {
+            sb.append("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =\n");
+            LOG.debug(sb.toString());
+        }
+    };
+
+    @Rule
+    public TestWatcher watcher = new TestWatcher() {
+        @Override
+        protected void starting(Description description) {
+            startTime = System.currentTimeMillis();
+        }
+
+        @Override
+        protected void finished(Description description) {
+            long totalTime = System.currentTimeMillis() - startTime;
+            LOG.debug("Total time: {}", totalTime);
+            sb.append(String.format("Total time for --%s-- is: %dms\n", description.getMethodName(), totalTime));
+            startTime = 0;
+        }
+    };
 
     @Autowired
     private MealService service;
@@ -40,8 +89,9 @@ public class MealServiceTest {
         MATCHER.assertCollectionEquals(Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2), service.getAll(USER_ID));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testDeleteNotFound() throws Exception {
+        thrown.expect(NotFoundException.class);
         service.delete(MEAL1_ID, 1);
     }
 
@@ -58,8 +108,9 @@ public class MealServiceTest {
         MATCHER.assertEquals(ADMIN_MEAL1, actual);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testGetNotFound() throws Exception {
+        thrown.expect(NotFoundException.class);
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
@@ -70,8 +121,9 @@ public class MealServiceTest {
         MATCHER.assertEquals(updated, service.get(MEAL1_ID, USER_ID));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testUpdateNotFound() throws Exception {
+        thrown.expect(NotFoundException.class);
         service.update(MEAL1, ADMIN_ID);
     }
 
