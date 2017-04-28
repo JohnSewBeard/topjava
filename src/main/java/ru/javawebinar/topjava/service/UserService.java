@@ -1,6 +1,6 @@
 package ru.javawebinar.topjava.service;
 
-
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -21,4 +21,8 @@ public interface UserService {
     void update(User user);
     
     void evictCache();
+
+    default User getWithMeals(int id) {
+        return get(id);
+    }
 }

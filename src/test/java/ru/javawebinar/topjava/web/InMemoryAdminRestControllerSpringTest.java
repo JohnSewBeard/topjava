@@ -5,8 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
@@ -18,8 +20,9 @@ import java.util.Collection;
 import static ru.javawebinar.topjava.UserTestData.ADMIN;
 import static ru.javawebinar.topjava.UserTestData.USER;
 
-@ContextConfiguration({"classpath:spring/spring-app.xml", "classpath:spring/mock.xml"})
+@ContextConfiguration({"classpath:spring/spring-app.xml", "classpath:spring/spring-db.xml"})
 @RunWith(SpringRunner.class)
+@ActiveProfiles({Profiles.ACTIVE_DB, "jdbc"})
 public class InMemoryAdminRestControllerSpringTest {
 
     @Autowired
