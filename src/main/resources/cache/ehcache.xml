@@ -28,4 +28,7 @@
     <cache name="ru.javawebinar.topjava.model.User"
            maxElementsInMemory="25000"/>
 
+    <cache name="ru.javawebinar.topjava.model.User.roles"
+           maxElementsInMemory="25000"/>
+
 </ehcache>
