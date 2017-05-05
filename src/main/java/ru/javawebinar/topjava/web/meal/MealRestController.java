@@ -22,7 +22,6 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 @Controller
-//@RequestMapping("/meals")
 public class MealRestController {
     private static final Logger LOG = LoggerFactory.getLogger(MealRestController.class);
 
@@ -46,12 +45,10 @@ public class MealRestController {
         service.delete(id, userId);
     }
 
-    @RequestMapping(value = "/meals", method = RequestMethod.GET)
-    public String getAll(Model model) {
+    public List<MealWithExceed> getAll() {
         int userId = AuthorizedUser.id();
         LOG.info("getAll for User {}", userId);
-        model.addAttribute("meals", MealsUtil.getWithExceeded(service.getAll(userId), AuthorizedUser.getCaloriesPerDay()));
-        return "meals";
+        return MealsUtil.getWithExceeded(service.getAll(userId), AuthorizedUser.getCaloriesPerDay());
     }
 
     public Meal create(Meal meal) {
