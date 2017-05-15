@@ -1,9 +1,11 @@
 package ru.javawebinar.topjava.web;
 
 import org.junit.Test;
+import ru.javawebinar.topjava.MealTestData;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.javawebinar.topjava.UserTestData.USER;
@@ -23,6 +25,24 @@ public class RootControllerTest extends AbstractControllerTest {
                         allOf(
                                 hasProperty("id", is(START_SEQ)),
                                 hasProperty("name", is(USER.getName()))
+                        )
+                )));
+    }
+
+    @Test
+    public void testMeals() throws Exception {
+        mockMvc.perform(post("/users").param("userId", "100001"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:meals"));
+
+        mockMvc.perform(get("/meals"))
+                .andExpect(status().isOk())
+                .andExpect(forwardedUrl("/WEB-INF/jsp/meals.jsp"))
+                .andExpect(model().attribute("meals", hasSize(2)))
+                .andExpect(model().attribute("meals", hasItem(
+                        allOf(
+                                hasProperty("description", is(MealTestData.ADMIN_MEAL2.getDescription())),
+                                hasProperty("id", is(MealTestData.ADMIN_MEAL2.getId()))
                         )
                 )));
     }
