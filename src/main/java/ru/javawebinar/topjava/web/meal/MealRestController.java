@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealWithExceed;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -27,13 +29,13 @@ public class MealRestController extends AbstractMealController {
     }
 
     @Override
-    @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void update(@RequestBody Meal meal, @PathVariable int id) {
         super.update(meal, id);
     }
 
     @Override
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Meal create(@RequestBody Meal meal) {
         return super.create(meal);
     }
@@ -49,5 +51,14 @@ public class MealRestController extends AbstractMealController {
                                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDateTime) {
         return super.getBetween(startDateTime.toLocalDate(), startDateTime.toLocalTime(),
                 endDateTime.toLocalDate(), endDateTime.toLocalTime());
+    }
+
+    @Override
+    @PostMapping(value = "/filterFull", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MealWithExceed> getBetween(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
+                                           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endTime) {
+        return super.getBetween(startDate, startTime, endDate, endTime);
     }
 }
