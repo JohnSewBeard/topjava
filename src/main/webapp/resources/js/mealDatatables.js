@@ -1,5 +1,6 @@
 var ajaxUrl = 'ajax/profile/meals/';
 var datatableApi;
+var filter;
 
 $(function () {
     datatableApi = $('#mealDataTable').DataTable({
@@ -26,4 +27,11 @@ $(function () {
         ]
     });
     makeEditable();
+    filter = $('#filter');
 });
+
+function clearFilter() {
+    $('#filter')[0].reset();
+    filter = null;
+}
+

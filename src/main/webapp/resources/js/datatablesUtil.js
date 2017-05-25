@@ -32,13 +32,24 @@ function deleteRow(id) {
 }
 
 function updateTable() {
-    $.get(ajaxUrl, function (data) {
-        datatableApi.clear();
-        $.each(data, function (key, item) {
-            datatableApi.row.add(item);
+    if (filter === null) {
+        $.get(ajaxUrl, function (data) {
+            datatableApi.clear();
+            $.each(data, function (key, item) {
+                datatableApi.row.add(item);
+            });
+            datatableApi.draw();
         });
-        datatableApi.draw();
-    });
+    } else {
+        var form = $('#filter');
+        $.post(ajaxUrl + "filter", form.serialize(), function (data) {
+            datatableApi.clear();
+            $.each(data, function (key, item) {
+                datatableApi.row.add(item);
+            });
+            datatableApi.draw();
+        });
+    }
 }
 
 function save() {

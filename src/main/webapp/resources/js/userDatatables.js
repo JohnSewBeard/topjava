@@ -39,4 +39,19 @@ $(function () {
         ]
     });
     makeEditable();
+    filter = null;
 });
+
+function changeStatus(checkbox, userId) {
+    var status = checkbox.checked;
+    $.ajax({
+        url: ajaxUrl + userId,
+        type: 'Post',
+        cache: false,
+        data: 'status=' + status,
+        success: function () {
+            $(checkbox).closest('tr').toggleClass('danger');
+            successNoty(status ? 'Enabled' : 'Disabled');
+        }
+    });
+}

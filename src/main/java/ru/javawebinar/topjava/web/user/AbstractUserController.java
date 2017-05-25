@@ -50,4 +50,9 @@ public abstract class AbstractUserController {
         log.info("getByEmail {}", email);
         return service.getByEmail(email);
     }
+
+    public void changeStatus(boolean status, int id) {
+        log.info("changeStatus {} id:{}", status, id);
+        service.changeStatus(status, id);
+    }
 }

@@ -43,4 +43,11 @@ public class AdminAjaxController extends AbstractUserController {
             super.update(user, id);
         }
     }
+
+    @Override
+    @PostMapping("/{id}")
+    public void changeStatus(@RequestParam boolean status,
+                             @PathVariable int id) {
+        super.changeStatus(status, id);
+    }
 }
