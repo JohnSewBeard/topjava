@@ -77,12 +77,12 @@
                         <th></th>
                     </tr>
                     </thead>
-                    <c:forEach items="${meals}" var="meal">
+                    <%--<c:forEach items="${meals}" var="meal">
                         <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.MealWithExceed"/>
-                        <tr class="${meal.exceed ? 'exceeded' : 'normal'}">
+                        &lt;%&ndash;<tr class="${meal.exceed ? 'exceeded' : 'normal'}">
                             <td>
-                                    <%--<fmt:parseDate value="${meal.dateTime}" pattern="y-M-dd'T'H:m" var="parsedDate"/>--%>
-                                    <%--<fmt:formatDate value="${parsedDate}" pattern="yyyy.MM.dd HH:mm" />--%>
+                                    &lt;%&ndash;<fmt:parseDate value="${meal.dateTime}" pattern="y-M-dd'T'H:m" var="parsedDate"/>&ndash;%&gt;
+                                    &lt;%&ndash;<fmt:formatDate value="${parsedDate}" pattern="yyyy.MM.dd HH:mm" />&ndash;%&gt;
                                     ${fn:formatDateTime(meal.dateTime)}
                             </td>
                             <td>${meal.description}</td>
@@ -93,8 +93,8 @@
                             <td><a onclick="deleteRow(${meal.id})">
                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             </a></td>
-                        </tr>
-                    </c:forEach>
+                        </tr>&ndash;%&gt;
+                    </c:forEach>--%>
                 </table>
             </div>
         </div>
