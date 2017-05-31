@@ -1,9 +1,13 @@
 package ru.javawebinar.topjava.web.meal;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealWithExceed;
@@ -16,6 +20,9 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/ajax/profile/meals")
 public class MealAjaxController extends AbstractMealController {
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,9 +45,7 @@ public class MealAjaxController extends AbstractMealController {
     @PostMapping
     public ResponseEntity<String> createOrUpdate(@Valid Meal meal, BindingResult result) {
         if (result.hasErrors()) {
-            StringBuilder sb = new StringBuilder();
-            result.getFieldErrors().forEach(fe -> sb.append(fe.getField()).append(" ").append(fe.getDefaultMessage()).append("<br>"));
-            return new ResponseEntity<>(sb.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(getErrorMessage(result.getFieldErrors()), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         if (meal.isNew()) {
@@ -60,5 +65,15 @@ public class MealAjaxController extends AbstractMealController {
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "endTime", required = false) LocalTime endTime) {
         return super.getBetween(startDate, startTime, endDate, endTime);
+    }
+
+    private String getErrorMessage(List<FieldError> errors) {
+        StringBuilder sb = new StringBuilder();
+        errors.forEach(fieldError -> sb
+                /*.append(messageSource.getMessage(fieldError.getField(), null, LocaleContextHolder.getLocale()) )
+                .append(" ")*/
+                .append(messageSource.getMessage(fieldError, LocaleContextHolder.getLocale()))
+                .append("</br>"));
+        return sb.toString();
     }
 }
