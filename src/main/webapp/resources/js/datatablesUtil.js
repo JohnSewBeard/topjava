@@ -5,6 +5,11 @@ function makeEditable() {
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);
     });
+
+    $('#dateTime').datetimepicker({
+        format: 'Y-m-d H:i'
+    });
+
     // solve problem with cache in IE: https://stackoverflow.com/a/4303862/548473
     $.ajaxSetup({ cache: false });
 }
@@ -19,6 +24,9 @@ function updateRow(id) {
     $('#modalTitle').html(i18n["editTitle"]);
     $.get(ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
+            if (key === "dateTime") {
+                value = value.substring(0, 16).replace("T", " ");
+            }
             form.find("input[name='" + key + "']").val(value);
         });
         $('#editRow').modal();

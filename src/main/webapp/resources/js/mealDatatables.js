@@ -15,6 +15,18 @@ function clearFilter() {
     $.get(ajaxUrl, updateTableByData);
 }
 
+function filterPicker() {
+    $('#startDate, #endDate').datetimepicker({
+        timepicker:false,
+        format:'Y-m-d'
+    });
+
+    $('#startTime, #endTime').datetimepicker({
+        datepicker:false,
+        format:'H:i'
+    });
+}
+
 $(function () {
     datatableApi = $("#datatable").DataTable({
         "ajax": {
@@ -27,8 +39,8 @@ $(function () {
             {
                 "data": "dateTime",
                 "render": function (data, type, row) {
-                    if (type === 'display') {
-                        return '<span>' + data.substring(0, 16).replace("T", " ") + '</span>';
+                    if (type === "display") {
+                        return data.substring(0, 16).replace("T", " ");
                     }
                     return data;
                 }
@@ -66,4 +78,5 @@ $(function () {
         },
         "initComplete": makeEditable
     });
+    filterPicker();
 });
