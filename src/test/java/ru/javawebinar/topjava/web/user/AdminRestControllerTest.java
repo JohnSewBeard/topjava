@@ -82,6 +82,18 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void testNotValidJson() throws Exception {
+        User create = new User(null, "newUser", "", "123", 2500, Role.ROLE_USER);
+        mockMvc.perform(post(REST_URL)
+                .with(userHttpBasic(ADMIN))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(create)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     public void testUpdate() throws Exception {
         User updated = new User(USER);
         updated.setName("UpdatedName");

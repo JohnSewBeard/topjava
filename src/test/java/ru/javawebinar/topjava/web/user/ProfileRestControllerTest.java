@@ -37,6 +37,19 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void testNotValidJson() throws Exception {
+        UserTo updated = UserUtil.asTo(USER);
+        updated.setPassword("");
+        mockMvc.perform(put(REST_URL)
+                .with(userHttpBasic(USER))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     public void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL)
                 .with(userHttpBasic(USER)))
