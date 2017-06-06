@@ -6,6 +6,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.util.ValidationUtil;
@@ -38,17 +39,23 @@ public class ExceptionInfoHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public ErrorInfo handleError(HttpServletRequest req, MethodArgumentNotValidException e) {
-        return handleError(req, new IllegalArgumentException(ValidationUtil
+        ErrorInfo result = logAndGetErrorInfo(req, e, false);
+        result.setDetail(getDetailMessage(e.getBindingResult()));
+        return result;
+
+        /*return handleError(req, new IllegalArgumentException(ValidationUtil
                 .getErrorResponse(e.getBindingResult())
                 .toString()
-                .split(",")[1]));
+                .split(",")[1]));*/
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseBody
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        return logAndGetErrorInfo(req, e, true);
+        ErrorInfo result = logAndGetErrorInfo(req, e, true);
+        result.setDetail("User with this email already present in application</br>");
+        return result;
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -66,5 +73,12 @@ public class ExceptionInfoHandler {
             LOG.warn("Exception at request " + req.getRequestURL() + ": " + rootCause.toString());
         }
         return new ErrorInfo(req.getRequestURL(), rootCause);
+    }
+
+    private static String getDetailMessage(BindingResult br) {
+        return ValidationUtil
+                .getErrorResponse(br)
+                .toString()
+                .split(",")[1];
     }
 }
