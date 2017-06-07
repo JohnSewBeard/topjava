@@ -42,11 +42,6 @@ public class ExceptionInfoHandler {
         ErrorInfo result = logAndGetErrorInfo(req, e, false);
         result.setDetail(getDetailMessage(e.getBindingResult()));
         return result;
-
-        /*return handleError(req, new IllegalArgumentException(ValidationUtil
-                .getErrorResponse(e.getBindingResult())
-                .toString()
-                .split(",")[1]));*/
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
@@ -54,7 +49,9 @@ public class ExceptionInfoHandler {
     @ResponseBody
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
         ErrorInfo result = logAndGetErrorInfo(req, e, true);
-        result.setDetail("User with this email already present in application</br>");
+        String emailError = "User with this email already present in application</br>";
+        String dateTimeError = "Date and time is already used";
+        result.setDetail(req.getRequestURL().toString().contains("meals") ? dateTimeError : emailError);
         return result;
     }
 
